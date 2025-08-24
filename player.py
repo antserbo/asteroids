@@ -36,27 +36,32 @@ class Player(CircleShape):
         pygame.draw.polygon(screen, "white", self.triangle(), 2)
 
     def rotate(self, dt):
-        self.rotation += PLAYER_TURN_SPEED * dt
+        self.rotation = (self.rotation + PLAYER_TURN_SPEED * dt) % 360
 
-    def shoot(self):
+    def shoot_with_forward(self, fwd: pygame.Vector2):
         if self.shoot_timer > 0:
             return
         self.shoot_timer = PLAYER_SHOOT_COOLDOWN
-        shot = Shot(self.position.x, self.position.y)
-        shot.velocity = pygame.Vector2(0.0, 1.0).rotate(self.rotation) * PLAYER_SHOT_SPEED
+
+        nose = self.position + fwd * (self.radius + 6)
+        shot = Shot(nose.x, nose.y)
+        shot.velocity = fwd * PLAYER_SHOT_SPEED + self.velocity * 0.5
 
     def update(self, dt):
-        self.shoot_timer -= dt
+        self.shoot_timer = max(0.0, self.shoot_timer - dt)
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
             self.rotate(-dt)
         if keys[pygame.K_d]:
             self.rotate(dt)
+
+        fwd = self.forward()
+
         if keys[pygame.K_w]:
-            self.accelerate(dt, +1.0)
+            self.accelerate(dt, +PLAYER_FORWARD_FACTOR)
         if keys[pygame.K_s]:
-            self.accelerate(dt, -0.6)
+            self.accelerate(dt, -PLAYER_REVERSE_FACTOR)
 
         self.apply_drag(dt)
         self.position += self.velocity * dt
@@ -65,4 +70,4 @@ class Player(CircleShape):
         self.position.y %= SCREEN_HEIGHT
 
         if keys[pygame.K_SPACE]:
-            self.shoot()
+            self.shoot_with_forward(fwd)

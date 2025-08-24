@@ -31,6 +31,9 @@ def main():
     game_running_state = True
 
     while game_running_state:
+
+        dt = game_clock.tick(GAME_FPS) / 1000
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
@@ -62,7 +65,8 @@ def main():
         screen.blit(fps_text, (8, 8))
 
         pygame.display.flip()
-        dt = game_clock.tick(GAME_FPS) / 1000
+
+    pygame.quit()
 
 
 if __name__ == "__main__":
