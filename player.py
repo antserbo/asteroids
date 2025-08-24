@@ -9,7 +9,6 @@ class Player(CircleShape):
         super().__init__(x, y, radius)
         self.rotation = 180.0
         self.shoot_timer = 0
-        self.velocity = pygame.Vector2(0.0, 0.0)
 
     def triangle(self):
         forward = pygame.Vector2(0.0, 1.0).rotate(self.rotation)
@@ -25,11 +24,14 @@ class Player(CircleShape):
     def apply_drag(self, dt: float):
         factor = PLAYER_DRAG ** dt
         self.velocity *= factor
+        if self.velocity.length_squared() < 0.02:
+            self.velocity.update(0.0, 0.0)
 
-    def accelerate(self, dt: float, sign: float = 1.0):
-        self.velocity += self.forward() * (PLAYER_THRUST * sign * dt)
-        speed = self.velocity.length()
-        if speed > PLAYER_MAX_SPEED:
+    def accelerate(self, dt: float, sign: float = 1.0, fwd: pygame.Vector2 | None = None):
+        if fwd is None:
+            fwd = self.forward()
+        self.velocity += fwd * (PLAYER_THRUST * sign * dt)
+        if self.velocity.length() > PLAYER_MAX_SPEED:
             self.velocity.scale_to_length(PLAYER_MAX_SPEED)
 
     def draw(self, screen):
@@ -43,7 +45,7 @@ class Player(CircleShape):
             return
         self.shoot_timer = PLAYER_SHOOT_COOLDOWN
 
-        nose = self.position + fwd * (self.radius + 6)
+        nose = self.position + fwd * (self.radius + PLAYER_MUZZLE_OFFSET)
         shot = Shot(nose.x, nose.y)
         shot.velocity = fwd * PLAYER_SHOT_SPEED + self.velocity * 0.5
 
@@ -59,9 +61,9 @@ class Player(CircleShape):
         fwd = self.forward()
 
         if keys[pygame.K_w]:
-            self.accelerate(dt, +PLAYER_FORWARD_FACTOR)
+            self.accelerate(dt, +PLAYER_FORWARD_FACTOR, fwd)
         if keys[pygame.K_s]:
-            self.accelerate(dt, -PLAYER_REVERSE_FACTOR)
+            self.accelerate(dt, -PLAYER_REVERSE_FACTOR, fwd)
 
         self.apply_drag(dt)
         self.position += self.velocity * dt

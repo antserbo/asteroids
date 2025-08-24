@@ -11,7 +11,7 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Asteroids")
     game_clock = pygame.time.Clock()
-    dt = 0
+    # dt = 0
 
     font = pygame.font.SysFont('Arial', 40)
 
@@ -45,8 +45,8 @@ def main():
                 print("Game over!")
                 game_running_state = False
 
-        for shot in shots:
-            for asteroid in asteroids:
+        for shot in list(shots):
+            for asteroid in list(asteroids):
                 if asteroid.collides_with(shot):
                     shot.kill()
                     asteroid.split()

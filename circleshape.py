@@ -11,7 +11,7 @@ class CircleShape(pygame.sprite.Sprite):
             super().__init__()
 
         self.position = pygame.Vector2(x, y)
-        self.velocity = pygame.Vector2(0, 0)
+        self.velocity = pygame.Vector2(0.0, 0.0)
         self.radius = radius
 
     def draw(self, screen):
