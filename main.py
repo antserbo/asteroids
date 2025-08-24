@@ -13,6 +13,8 @@ def main():
     game_clock = pygame.time.Clock()
     dt = 0
 
+    font = pygame.font.SysFont('Arial', 40)
+
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
@@ -50,6 +52,14 @@ def main():
 
         for obj in drawable:
             obj.draw(screen)
+
+        '''
+        -----------
+        FPS COUNTER.
+        -----------
+        '''
+        fps_text = font.render(f"{game_clock.get_fps():.0f} FPS", True, "yellow")
+        screen.blit(fps_text, (8, 8))
 
         pygame.display.flip()
         dt = game_clock.tick(GAME_FPS) / 1000
