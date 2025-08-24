@@ -1,4 +1,3 @@
-import sys
 import pygame
 from constants import *
 from player import Player
@@ -10,6 +9,7 @@ from shot import Shot
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Asteroids")
     game_clock = pygame.time.Clock()
     dt = 0
 
@@ -26,7 +26,9 @@ def main():
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     asteroid_field = AsteroidField()
 
-    while True:
+    game_running_state = True
+
+    while game_running_state:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
@@ -36,7 +38,7 @@ def main():
         for asteroid in asteroids:
             if asteroid.collides_with(player):
                 print("Game over!")
-                sys.exit()
+                game_running_state = False
 
         for shot in shots:
             for asteroid in asteroids:
@@ -50,7 +52,7 @@ def main():
             obj.draw(screen)
 
         pygame.display.flip()
-        dt = game_clock.tick(60) / 1000
+        dt = game_clock.tick(GAME_FPS) / 1000
 
 
 if __name__ == "__main__":
